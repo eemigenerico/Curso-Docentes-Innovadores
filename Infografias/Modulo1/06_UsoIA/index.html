@@ -142,23 +142,32 @@
     </div>
 
     <script>
-        // --- API & Helper Functions ---
+        // --- API & Helper Functions (CORREGIDO) ---
         const callGeminiAPI = async (prompt, retries = 3, delay = 1000) => {
             // ¡ADVERTENCIA DE SEGURIDAD!
             // Exponer una API Key en el código del lado del cliente es muy riesgoso.
             // Cualquiera puede verla y usarla. Para un producto real, esto debe manejarse
             // a través de un backend (servidor) que oculte la clave.
-            const apiKey = "AIzaSyDaJse0Acs-jh-xTmAIkc2mzxsnmTnN1yA"; // Tu API Key aquí
+            const apiKey = "AIzaSyBbuGm12FHufYfnKUJlPWg4zQHvq_02yUU"; // Tu API Key aquí
 
-            // Usamos el modelo 'latest' para asegurar que usamos la versión más actualizada.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            // --- LA CORRECCIÓN ESTÁ AQUÍ ---
+            // Apuntamos al mismo modelo que sí te funciona en la otra infografía.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            };
 
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(payload)
                     });
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -166,7 +175,6 @@
                     if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
                         return result.candidates[0].content.parts[0].text;
                     } else {
-                        // Esto puede pasar si la respuesta es bloqueada por filtros de seguridad.
                         return "La respuesta fue generada pero no se puede mostrar. Intenta con una pregunta diferente.";
                     }
                 } catch (error) {
